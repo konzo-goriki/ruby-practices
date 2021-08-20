@@ -31,7 +31,11 @@ def date(month=nil,year=nil)
 
   first_day.wday.times {print("　 ")}
   (first_day..last_day).each do |day|
-    print(day.strftime("%e "))
+    unless day == Date.today then
+      print("#{day.strftime("%e ")}")
+    else
+      print("#{day.strftime("\e[7m%e\e[0m ")}")
+    end
     print("\n") if day.saturday?
   end
   print("\n")
