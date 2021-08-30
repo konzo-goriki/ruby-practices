@@ -42,13 +42,9 @@ def print_body_of_calendar(month=nil,year=nil)
   print("\n")
 end
 
-def to_i(str)
-  str.to_i unless str.nil?
-end
-
 options = option
-month = to_i(options["-m"])
-year = to_i(options["-y"])
+month = options["-m"]&.to_i
+year = options["-y"]&.to_i
 print_top_of_calendar(month, year)
 print_body_of_calendar(month, year)
 
