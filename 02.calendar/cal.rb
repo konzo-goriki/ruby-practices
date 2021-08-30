@@ -1,3 +1,4 @@
+#! /usr/bin/env ruby
 # calendar.rb
 require "date"
 require "optparse"
