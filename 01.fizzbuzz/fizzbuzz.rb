@@ -9,7 +9,7 @@ def fizzbuzz
     elsif n % 3 == 0
       puts "Fizz"
     else
-      puts n.to_s
+      puts n
     end
   end
 end
