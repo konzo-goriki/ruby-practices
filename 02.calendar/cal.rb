@@ -14,7 +14,7 @@ def option
   options
 end
 
-def years(month=nil,year=nil)
+def print_top_of_calendar(month=nil,year=nil)
   month ||= Date.today.month
   year ||= Date.today.year
 
@@ -23,7 +23,7 @@ def years(month=nil,year=nil)
   print("\n")
 end
 
-def date(month=nil,year=nil)
+def print_body_of_calendar(month=nil,year=nil)
   month ||= Date.today.month
   year ||= Date.today.year
 
@@ -49,6 +49,6 @@ end
 options = option
 month = to_i(options["-m"])
 year = to_i(options["-y"])
-years(month, year)
-date(month, year)
+print_top_of_calendar(month, year)
+print_body_of_calendar(month, year)
 
