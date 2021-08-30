@@ -1,7 +1,5 @@
 def fizzbuzz
-  range = 1..20
-
-  range.each do |n|
+  (1..20).each do |n|
     if n % 15 == 0
       puts "FizzBuzz"
     elsif n % 5 == 0
