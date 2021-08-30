@@ -18,8 +18,8 @@ def print_top_of_calendar(month=nil,year=nil)
   month ||= Date.today.month
   year ||= Date.today.year
 
-  puts("      #{month}月 #{year}")
-  ["日","月","火","水","木","金","土"].each {|w| print("#{w} ") }
+  puts "#{month}月 #{year}".center(20) #20:全角(2)*7 + 半角(1)*(7-1)
+  print ["日","月","火","水","木","金","土"].join(' ')
   print("\n")
 end
 
