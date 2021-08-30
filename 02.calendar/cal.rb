@@ -30,12 +30,12 @@ def print_body_of_calendar(month=nil,year=nil)
   first_day = Date.new(year,month,1)
   last_day = Date.new(year,month,-1)
 
-  first_day.wday.times {print("　 ")}
+  print "　 " * first_day.wday
   (first_day..last_day).each do |day|
-    unless day == Date.today then
-      print("#{day.strftime("%e ")}")
+    if day == Date.today
+      print(day.strftime("\e[7m%e\e[0m "))
     else
-      print("#{day.strftime("\e[7m%e\e[0m ")}")
+      print(day.strftime("%e "))
     end
     print("\n") if day.saturday?
   end
