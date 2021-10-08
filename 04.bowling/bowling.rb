@@ -1,6 +1,9 @@
 #! /usr/bin/env ruby
+
 # bowring.rb
 # ボウリングのスコア計算（旧システム）
+
+# frozen_string_literal: true
 
 scores = ARGV[0].split(',')
 
@@ -10,7 +13,7 @@ scores.each do |s|
   if s == 'X' # ストライク
     # 10フレーム目はストライクでもフレームを続行
     shots << 10
-    shots << 0 if shots.size < 9 * 2 
+    shots << 0 if shots.size < 9 * 2
   else
     shots << s.to_i
   end
