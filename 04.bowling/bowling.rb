@@ -18,7 +18,6 @@ scores.each do |s|
     shots << s.to_i
   end
 end
-p shots
 
 # 全投球をフレームごとに分割
 # 10フレーム目だけ3投になる
@@ -30,13 +29,11 @@ if frames[10]
   frames[9] = frames[9] + frames[10]
   frames.delete_at(10)
 end
-p frames
 # 得点計算
 point = 0
 next1 = 0
 next2 = 0
 frames.reverse_each do |frame|
-  p point
   if frame.size == 3 # 3投してる10フレーム目
     point += frame.sum
     next2 = frame[1]
