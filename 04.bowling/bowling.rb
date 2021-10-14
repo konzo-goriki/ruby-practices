@@ -21,14 +21,12 @@ end
 
 # 全投球をフレームごとに分割
 # 10フレーム目だけ3投になる
-frames = []
-shots.each_slice(2) do |s|
-  frames << s
-end
+frames = shots.each_slice(2).to_a
 if frames[10]
   frames[9] = frames[9] + frames[10]
   frames.delete_at(10)
 end
+
 # 得点計算
 point = 0
 next1 = 0
