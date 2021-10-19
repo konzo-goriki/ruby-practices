@@ -1,0 +1,31 @@
+#! /usr/bin/env ruby
+
+# ls.rb
+
+# frozen_string_literal: true
+
+COLUMN_SIZE = 3
+
+def show_files(files, len)
+  files.transpose.map do |rows|
+    rows.map do |file|
+      print "#{file&.ljust(len)}  "
+    end
+    print "\n"
+  end
+end
+
+def ls
+  files = Dir.glob('*')
+  max_file_len = files.max_by(&:length).length
+
+  sliced_files = []
+  files.each_slice((files.size.to_f / COLUMN_SIZE).ceil(0)) { |f| sliced_files << f }
+
+  # Array#transposeのためにsliced_filesの要素数を揃える
+  (sliced_files.first.size - sliced_files.last.size).times { sliced_files.last << nil }
+
+  show_files(sliced_files, max_file_len)
+end
+
+ls
