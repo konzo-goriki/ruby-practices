@@ -4,7 +4,18 @@
 
 # frozen_string_literal: true
 
+require 'optparse'
 COLUMN_SIZE = 3
+
+def parse_options
+  options = {}
+  opt = OptionParser.new
+
+  opt.on('-r') { |v| options['-r'] = v }
+  opt.parse!(ARGV)
+
+  options
+end
 
 def show_files(files, len)
   files.transpose.map do |rows|
@@ -16,7 +27,9 @@ def show_files(files, len)
 end
 
 def ls
+  options = parse_options
   files = Dir.glob('*')
+  files.reverse! if options['-r']
   max_file_len = files.max_by(&:length).length
 
   sliced_files = []
