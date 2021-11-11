@@ -69,10 +69,17 @@ def parse_options
   options
 end
 
-def show_files(files, len)
-  files.transpose.map do |rows|
+def show_normal_format_files(files)
+  max_file_len = files.max_by(&:length).length
+  sliced_files = []
+  files.each_slice((files.size.to_f / COLUMN_SIZE).ceil(0)) { |f| sliced_files << f }
+
+  # Array#transposeのためにsliced_filesの要素数を揃える
+  (sliced_files.first.size - sliced_files.last.size).times { sliced_files.last << nil }
+
+  sliced_files.transpose.map do |rows|
     rows.map do |file|
-      print "#{file&.ljust(len)}  "
+      print "#{file&.ljust(max_file_len)}  "
     end
     print "\n"
   end
@@ -166,18 +173,11 @@ end
 def ls
   options = parse_options
   files = Dir.glob('*')
-  max_file_len = files.max_by(&:length).length
 
   if options['-l']
     show_long_listing_format_files(files)
   else
-    sliced_files = []
-    files.each_slice((files.size.to_f / COLUMN_SIZE).ceil(0)) { |f| sliced_files << f }
-
-    # Array#transposeのためにsliced_filesの要素数を揃える
-    (sliced_files.first.size - sliced_files.last.size).times { sliced_files.last << nil }
-
-    show_files(sliced_files, max_file_len)
+    show_normal_format_files(files)
   end
 end
 
