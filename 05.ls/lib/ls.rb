@@ -146,7 +146,7 @@ def show_long_listing_format_files(files)
 
   puts "total #{count_blocks(files)}"
 
-  files.map do |file|
+  files.each do |file|
     print "#{convert_strmode(File.stat(file).mode)} "
     print "#{File.stat(file).nlink.to_s.rjust(max_nlink_digits)} "
     print "#{Etc.getpwuid(File.stat(file).uid).name.rjust(max_username_length)}  "
