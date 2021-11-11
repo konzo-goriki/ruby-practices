@@ -31,16 +31,33 @@ S_ISUID = '004000'.to_i(8)
 S_IRUSR = '000400'.to_i(8)
 S_IWUSR = '000200'.to_i(8)
 S_IXUSR = '000100'.to_i(8)
+CONV_MODE_USR_HASH = {
+  0 => '-',
+  S_IXUSR => 'x',
+  S_ISUID => 'S',
+  S_IXUSR | S_ISUID => 's'
+}.freeze
 
 ## group
 S_IRGRP = '000040'.to_i(8)
 S_IWGRP = '000020'.to_i(8)
 S_IXGRP = '000010'.to_i(8)
-
+CONV_MODE_GRP_HASH = {
+  0 => '-',
+  S_IXGRP => 'x',
+  S_ISGID => 'S',
+  S_IXGRP | S_ISGID => 's'
+}.freeze
 ## other
 S_IROTH = '000004'.to_i(8)
 S_IWOTH = '000002'.to_i(8)
 S_IXOTH = '000001'.to_i(8)
+CONV_MODE_OTH_HASH = {
+  0 => '-',
+  S_IXOTH => 'x',
+  S_ISVTX => 'T',
+  S_IXOTH | S_ISVTX => 't'
+}.freeze
 
 def parse_options
   options = {}
@@ -106,16 +123,7 @@ def convert_strmode_user(mode)
               'w'
             end
 
-  case (mode & (S_IXUSR | S_ISUID))
-  when 0
-    symbol << '-'
-  when S_IXUSR
-    symbol << 'x'
-  when S_ISUID
-    symbol << 'S'
-  when S_IXUSR | S_ISUID
-    symbol << 's'
-  end
+  symbol << CONV_MODE_USR_HASH[mode & (S_IXUSR | S_ISUID)]
 end
 
 def convert_strmode_group(mode)
@@ -134,16 +142,7 @@ def convert_strmode_group(mode)
               'w'
             end
 
-  case (mode & (S_IXGRP | S_ISGID))
-  when 0
-    symbol << '-'
-  when S_IXGRP
-    symbol << 'x'
-  when S_ISGID
-    symbol << 'S'
-  when S_IXGRP | S_ISGID
-    symbol << 's'
-  end
+  symbol << CONV_MODE_GRP_HASH[mode & (S_IXGRP | S_ISGID)]
 end
 
 def convert_strmode_other(mode)
@@ -161,16 +160,7 @@ def convert_strmode_other(mode)
               'w'
             end
 
-  case (mode & (S_IXOTH | S_ISVTX))
-  when 0
-    symbol << '-'
-  when S_IXOTH
-    symbol << 'x'
-  when S_ISGID
-    symbol << 'T'
-  when S_IXOTH | S_ISVTX
-    symbol << 't'
-  end
+  symbol << CONV_MODE_OTH_HASH[mode & (S_IXOTH | S_ISVTX)]
 end
 
 def convert_strmode(mode)
