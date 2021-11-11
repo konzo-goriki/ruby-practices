@@ -21,6 +21,15 @@ S_IFBLK = '060000'.to_i(8)
 S_IFREG = '100000'.to_i(8)
 S_IFLNK = '120000'.to_i(8)
 S_IFSOCK = '140000'.to_i(8)
+CONV_MODE_FILE_TYPE_HASH = {
+  S_IFFIFO => 'p',
+  S_IFCHR => 'c',
+  S_IFDIR => 'd',
+  S_IFBLK => 'b',
+  S_IFREG => '-',
+  S_IFLNK => 'l',
+  S_IFSOCK => 's'
+}.freeze
 
 ##
 S_ISVTX = '001000'.to_i(8)
@@ -95,24 +104,8 @@ end
 
 def convert_strmode_file_type(mode)
   symbol = []
-
   # file type
-  case (mode & S_IFMT)
-  when S_IFFIFO
-    symbol << 'p'
-  when S_IFCHR
-    symbol << 'c'
-  when S_IFDIR
-    symbol << 'd'
-  when S_IFBLK
-    symbol << 'b'
-  when S_IFREG
-    symbol << '-'
-  when S_IFLNK
-    symbol << 'l'
-  when S_IFSOCK
-    symbol << 's'
-  end
+  symbol << CONV_MODE_FILE_TYPE_HASH[mode & S_IFMT]
 end
 
 def convert_strmode_user(mode)
