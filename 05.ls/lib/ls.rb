@@ -110,56 +110,25 @@ end
 
 def convert_strmode_user(mode)
   symbol = []
-
   # user
-  symbol << if (mode & S_IRUSR).zero?
-              '-'
-            else
-              'r'
-            end
-  symbol << if (mode & S_IWUSR).zero?
-              '-'
-            else
-              'w'
-            end
-
+  symbol << ((mode & S_IRUSR).zero? ? '-' : 'r')
+  symbol << ((mode & S_IWUSR).zero? ? '-' : 'w')
   symbol << CONV_MODE_USR_HASH[mode & (S_IXUSR | S_ISUID)]
 end
 
 def convert_strmode_group(mode)
   symbol = []
-
   # group
-  symbol << if (mode & S_IRGRP).zero?
-              '-'
-            else
-              'r'
-            end
-
-  symbol << if (mode & S_IWGRP).zero?
-              '-'
-            else
-              'w'
-            end
-
+  symbol << ((mode & S_IRGRP).zero? ? '-' : 'r')
+  symbol << ((mode & S_IWGRP).zero? ? '-' : 'w')
   symbol << CONV_MODE_GRP_HASH[mode & (S_IXGRP | S_ISGID)]
 end
 
 def convert_strmode_other(mode)
   symbol = []
   # other
-  symbol << if (mode & S_IROTH).zero?
-              '-'
-            else
-              'r'
-            end
-
-  symbol << if (mode & S_IWOTH).zero?
-              '-'
-            else
-              'w'
-            end
-
+  symbol << ((mode & S_IROTH).zero? ? '-' : 'r')
+  symbol << ((mode & S_IWOTH).zero? ? '-' : 'w')
   symbol << CONV_MODE_OTH_HASH[mode & (S_IXOTH | S_ISVTX)]
 end
 
