@@ -21,7 +21,7 @@ S_IFBLK = '060000'.to_i(8)
 S_IFREG = '100000'.to_i(8)
 S_IFLNK = '120000'.to_i(8)
 S_IFSOCK = '140000'.to_i(8)
-CONV_MODE_FILE_TYPE_HASH = {
+MODE_FILE_TYPE_TABLE = {
   S_IFFIFO => 'p',
   S_IFCHR => 'c',
   S_IFDIR => 'd',
@@ -40,7 +40,7 @@ S_ISUID = '004000'.to_i(8)
 S_IRUSR = '000400'.to_i(8)
 S_IWUSR = '000200'.to_i(8)
 S_IXUSR = '000100'.to_i(8)
-CONV_MODE_USR_HASH = {
+MODE_USR_TABLE = {
   0 => '-',
   S_IXUSR => 'x',
   S_ISUID => 'S',
@@ -51,7 +51,7 @@ CONV_MODE_USR_HASH = {
 S_IRGRP = '000040'.to_i(8)
 S_IWGRP = '000020'.to_i(8)
 S_IXGRP = '000010'.to_i(8)
-CONV_MODE_GRP_HASH = {
+MODE_GRP_TABLE = {
   0 => '-',
   S_IXGRP => 'x',
   S_ISGID => 'S',
@@ -61,7 +61,7 @@ CONV_MODE_GRP_HASH = {
 S_IROTH = '000004'.to_i(8)
 S_IWOTH = '000002'.to_i(8)
 S_IXOTH = '000001'.to_i(8)
-CONV_MODE_OTH_HASH = {
+MODE_OTH_TABLE = {
   0 => '-',
   S_IXOTH => 'x',
   S_ISVTX => 'T',
@@ -105,7 +105,7 @@ end
 def convert_strmode_file_type(mode)
   symbol = []
   # file type
-  symbol << CONV_MODE_FILE_TYPE_HASH[mode & S_IFMT]
+  symbol << MODE_FILE_TYPE_TABLE[mode & S_IFMT]
 end
 
 def convert_strmode_user(mode)
@@ -113,7 +113,7 @@ def convert_strmode_user(mode)
   # user
   symbol << ((mode & S_IRUSR).zero? ? '-' : 'r')
   symbol << ((mode & S_IWUSR).zero? ? '-' : 'w')
-  symbol << CONV_MODE_USR_HASH[mode & (S_IXUSR | S_ISUID)]
+  symbol << MODE_USR_TABLE[mode & (S_IXUSR | S_ISUID)]
 end
 
 def convert_strmode_group(mode)
@@ -121,7 +121,7 @@ def convert_strmode_group(mode)
   # group
   symbol << ((mode & S_IRGRP).zero? ? '-' : 'r')
   symbol << ((mode & S_IWGRP).zero? ? '-' : 'w')
-  symbol << CONV_MODE_GRP_HASH[mode & (S_IXGRP | S_ISGID)]
+  symbol << MODE_GRP_TABLE[mode & (S_IXGRP | S_ISGID)]
 end
 
 def convert_strmode_other(mode)
@@ -129,7 +129,7 @@ def convert_strmode_other(mode)
   # other
   symbol << ((mode & S_IROTH).zero? ? '-' : 'r')
   symbol << ((mode & S_IWOTH).zero? ? '-' : 'w')
-  symbol << CONV_MODE_OTH_HASH[mode & (S_IXOTH | S_ISVTX)]
+  symbol << MODE_OTH_TABLE[mode & (S_IXOTH | S_ISVTX)]
 end
 
 def convert_strmode(mode)
@@ -152,11 +152,7 @@ def show_long_listing_format_files(files)
     print "#{Etc.getpwuid(File.stat(file).uid).name.rjust(max_username_length)}  "
     print "#{Etc.getgrgid(File.stat(file).gid).name.rjust(max_groupname_length)}  "
     print "#{File.stat(file).size.to_s.rjust(max_size_digits)} "
-    time_format = if Date.today.year == File.stat(file).mtime.year
-                    '%_m %_d %H:%M'
-                  else
-                    '%_m %_d  %Y'
-                  end
+    time_format = (Date.today.year == File.stat(file).mtime.year ? '%_m %_d %H:%M' : '%_m %_d  %Y')
     print "#{File.stat(file).mtime.strftime(time_format)} "
     print file
     print "\n"
