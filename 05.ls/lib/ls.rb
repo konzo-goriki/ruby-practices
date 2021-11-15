@@ -7,11 +7,13 @@
 require 'optparse'
 COLUMN_SIZE = 3
 
-def option
+def parse_options
   options = {}
   opt = OptionParser.new
 
   opt.on('-a') { |v| options['-a'] = v }
+  opt.on('-r') { |v| options['-r'] = v }
+
   opt.parse!(ARGV)
 
   options
@@ -27,12 +29,13 @@ def show_files(files, len)
 end
 
 def ls
-  options = option
+  options = parse_options
   files = if options['-a']
             Dir.glob('*', File::FNM_DOTMATCH)
           else
             Dir.glob('*')
           end
+  files.reverse! if options['-r']
   max_file_len = files.max_by(&:length).length
 
   sliced_files = []
