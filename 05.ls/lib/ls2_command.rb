@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 require 'etc'
 require 'date'
@@ -127,7 +129,8 @@ def ls_long(filenames)
   rows = ["total #{block_total}"]
   rows += filenames.map do |filename|
     format_row(filename, max_nlink, max_username_length, max_groupname_length, max_size)
-  end.join("\n")
+  end
+  rows.join("\n")
 end
 
 def format_row(filename, max_nlink, max_username_length, max_groupname_length, max_size)
@@ -141,7 +144,7 @@ def format_row(filename, max_nlink, max_username_length, max_groupname_length, m
   ret += "  #{stat.size.to_s.rjust(max_size)}"
   time_format = (Date.today.year == stat.mtime.year ? '%_m %_d %H:%M' : '%_m %_d  %Y')
   ret += " #{stat.mtime.strftime(time_format)}"
-  ret += " #{pathname}"
+  ret += " #{pathname.basename}"
   ret
 end
 
@@ -153,9 +156,7 @@ def format_table(filenames, max_filename_count)
   filenames.map do |row_files|
     row_files.map do |filename|
       basename = filename ? File.basename(filename) : ''
-      basename.to_s.ljust(max_filename_count + 1) 
+      basename.to_s.ljust(max_filename_count + 1)
     end.join.rstrip
   end.join("\n")
 end
-
-
