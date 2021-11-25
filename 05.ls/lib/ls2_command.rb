@@ -97,9 +97,9 @@ def convert_strmode(mode)
   symbol.join
 end
 
-def run_ls(pathname, long_format: false, reverse: false, show_dots: false)
+def run_ls(pathname, long_format: false, reverse: false, dot_match: false)
   pattern = pathname.join('*')
-  params = show_dots ? [pattern, File::FNM_DOTMATCH] : [pattern]
+  params = dot_match ? [pattern, File::FNM_DOTMATCH] : [pattern]
   file_paths = Dir.glob(*params).sort
   file_paths.reverse! if reverse
   long_format ? ls_long(file_paths) : ls_normal(file_paths)
