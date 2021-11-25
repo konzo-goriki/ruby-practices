@@ -100,35 +100,35 @@ end
 def run_ls(pathname, long_format: false, reverse: false, show_dots: false)
   pattern = pathname.join('*')
   params = show_dots ? [pattern, File::FNM_DOTMATCH] : [pattern]
-  filenames = Dir.glob(*params).sort
-  filenames.reverse! if reverse
-  long_format ? ls_long(filenames) : ls_normal(filenames)
+  file_paths = Dir.glob(*params).sort
+  file_paths.reverse! if reverse
+  long_format ? ls_long(file_paths) : ls_normal(file_paths)
 end
 
-def ls_normal(filenames)
-  max_filename_count = filenames.map { |filename| File.basename(filename).size }.max
-  row_size = (filenames.count.to_f / COLMUN_SIZE).ceil
-  transposed_filenames = safe_transpose(filenames.each_slice(row_size).to_a)
-  format_table(transposed_filenames, max_filename_count)
+def ls_normal(file_paths)
+  max_file_path_count = file_paths.map { |file_path| File.basename(file_path).size }.max
+  row_size = (file_paths.count.to_f / COLMUN_SIZE).ceil
+  transposed_file_paths = safe_transpose(file_paths.each_slice(row_size).to_a)
+  format_table(transposed_file_paths, max_file_path_count)
 end
 
-def build_data(filename, stat)
+def build_data(file_path, stat)
   {
-    type_and_mode: format_type_and_mode(filename),
+    type_and_mode: format_type_and_mode(file_path),
     nlink: stat.nlink.to_s,
     user: Etc.getpwuid(stat.uid).name,
     group: Etc.getgrgid(stat.gid).name,
     size: stat.size.to_s,
-    mtime: format_mtime(filename),
-    basename: File.basename(filename),
+    mtime: format_mtime(file_path),
+    basename: File.basename(file_path),
     blocks: stat.blocks
   }
 end
 
-def ls_long(filenames)
-  row_data = filenames.map do |filename|
-    stat = File.stat(filename)
-    build_data(filename, stat)
+def ls_long(file_paths)
+  row_data = file_paths.map do |file_path|
+    stat = File.stat(file_path)
+    build_data(file_path, stat)
   end
   block_total = row_data.sum { |data| data[:blocks] }
   total = "total #{block_total}"
@@ -150,14 +150,14 @@ def find_max_size(row_data, key)
   row_data.map { |data| data[key].size }.max
 end
 
-def format_type_and_mode(filename)
-  pathname = Pathname(filename)
+def format_type_and_mode(file_path)
+  pathname = Pathname(file_path)
   stat = pathname.stat
   convert_strmode(stat.mode)
 end
 
-def format_mtime(filename)
-  pathname = Pathname(filename)
+def format_mtime(file_path)
+  pathname = Pathname(file_path)
   stat = pathname.stat
   time_format = (Date.today.year == stat.mtime.year ? '%_m %_d %H:%M' : '%_m %_d  %Y')
   stat.mtime.strftime(time_format)
@@ -175,15 +175,15 @@ def format_row(data, max_nlink, max_user_length, max_group_length, max_size)
   ].join
 end
 
-def safe_transpose(sliced_filenames)
-  sliced_filenames[0].zip(*sliced_filenames[1..-1])
+def safe_transpose(sliced_file_paths)
+  sliced_file_paths[0].zip(*sliced_file_paths[1..-1])
 end
 
-def format_table(filenames, max_filename_count)
-  filenames.map do |row_files|
-    row_files.map do |filename|
-      basename = filename ? File.basename(filename) : ''
-      basename.to_s.ljust(max_filename_count + 1)
+def format_table(file_paths, max_file_path_count)
+  file_paths.map do |row_files|
+    row_files.map do |file_path|
+      basename = file_path ? File.basename(file_path) : ''
+      basename.to_s.ljust(max_file_path_count + 1)
     end.join.rstrip
   end.join("\n")
 end
