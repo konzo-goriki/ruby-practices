@@ -7,11 +7,11 @@ require 'pathname'
 require_relative '../lib/ls2_command'
 
 opt = OptionParser.new
-params = { long_format: false, reverse: false, show_dots: false }
+params = { long_format: false, reverse: false, dot_match: false }
 
 opt.on('-l') { |v| params[:long_format] = v }
 opt.on('-r') { |v| params[:reverse] = v }
-opt.on('-a') { |v| params[:show_dots] = v }
+opt.on('-a') { |v| params[:dot_match] = v }
 opt.parse!(ARGV)
 
 path = ARGV[0] || '.'
