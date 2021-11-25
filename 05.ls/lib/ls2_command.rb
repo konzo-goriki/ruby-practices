@@ -185,9 +185,13 @@ end
 
 def format_table(file_paths, max_file_path_count)
   file_paths.map do |row_files|
-    row_files.map do |file_path|
-      basename = file_path ? File.basename(file_path) : ''
-      basename.to_s.ljust(max_file_path_count + 1)
-    end.join.rstrip
+    render_normal_format_row(row_files, max_file_path_count)
   end.join("\n")
+end
+
+def render_normal_format_row(row_files, max_file_path_count)
+  row_files.map do |file_path|
+    basename = file_path ? File.basename(file_path) : ''
+    basename.to_s.ljust(max_file_path_count + 1)
+  end.join.rstrip
 end
