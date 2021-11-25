@@ -98,11 +98,15 @@ def convert_strmode(mode)
 end
 
 def run_ls(pathname, long_format: false, reverse: false, dot_match: false)
+  file_paths = collect_file_paths(pathname, reverse, dot_match)
+  long_format ? ls_long(file_paths) : ls_normal(file_paths)
+end
+
+def collect_file_paths(pathname, reverse, dot_match)
   pattern = pathname.join('*')
   params = dot_match ? [pattern, File::FNM_DOTMATCH] : [pattern]
   file_paths = Dir.glob(*params).sort
-  file_paths.reverse! if reverse
-  long_format ? ls_long(file_paths) : ls_normal(file_paths)
+  reverse ? file_paths.reverse : file_paths
 end
 
 def ls_normal(file_paths)
