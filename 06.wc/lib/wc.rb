@@ -80,10 +80,10 @@ def wc
   options = parse_options
   options.update({ '-l' => true, '-c' => true, '-w' => true }) if options.empty?
 
-  if File.pipe?($stdin) || !File.select([$stdin], [], [], 0).nil?
-    show_stdin(options)
-  else
+  if ARGV[0]
     show_files(options)
+  else
+    show_stdin(options)
   end
 end
 
