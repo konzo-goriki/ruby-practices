@@ -112,40 +112,67 @@ def ls_normal(filenames)
   format_table(transposed_filenames, max_filename_count)
 end
 
-def ls_long(filenames)
-  block_total = 0
-  max_nlink = 0
-  max_username_length = 0
-  max_groupname_length = 0
-  max_size = 0
-  filenames.each do |filename|
-    stat = File.stat(filename)
-    max_nlink = [max_nlink, stat.nlink.to_s.length].max
-    max_username_length = [max_username_length, Etc.getpwuid(stat.uid).name.length].max
-    max_groupname_length = [max_groupname_length, Etc.getgrgid(stat.gid).name.length].max
-    max_size = [max_size, stat.size.to_s.length].max
-    block_total += stat.blocks
-  end
-  rows = ["total #{block_total}"]
-  rows += filenames.map do |filename|
-    format_row(filename, max_nlink, max_username_length, max_groupname_length, max_size)
-  end
-  rows.join("\n")
+def build_data(filename, stat)
+  {
+    type_and_mode: format_type_and_mode(filename),
+    nlink: stat.nlink.to_s,
+    user: Etc.getpwuid(stat.uid).name,
+    group: Etc.getgrgid(stat.gid).name,
+    size: stat.size.to_s,
+    mtime: format_mtime(filename),
+    basename: File.basename(filename),
+    blocks: stat.blocks
+  }
 end
 
-def format_row(filename, max_nlink, max_username_length, max_groupname_length, max_size)
-  ret = ''
+def ls_long(filenames)
+  row_data = filenames.map do |filename|
+    stat = File.stat(filename)
+    build_data(filename, stat)
+  end
+  block_total = row_data.sum { |data| data[:blocks] }
+  total = "total #{block_total}"
+  body = render_long_format_body(row_data)
+  [total, *body].join("\n")
+end
+
+def render_long_format_body(row_data)
+  max_nlink = find_max_size(row_data, :nlink)
+  max_user_length = find_max_size(row_data, :user)
+  max_group_length = find_max_size(row_data, :group)
+  max_size = find_max_size(row_data, :size)
+  row_data.map do |data|
+    format_row(data, max_nlink, max_user_length, max_group_length, max_size)
+  end
+end
+
+def find_max_size(row_data, key)
+  row_data.map { |data| data[key].size }.max
+end
+
+def format_type_and_mode(filename)
   pathname = Pathname(filename)
   stat = pathname.stat
-  ret += convert_strmode(stat.mode)
-  ret += "  #{stat.nlink.to_s.rjust(max_nlink)}"
-  ret += " #{Etc.getpwuid(stat.uid).name.rjust(max_username_length)}"
-  ret += "  #{Etc.getgrgid(stat.gid).name.rjust(max_groupname_length)}"
-  ret += "  #{stat.size.to_s.rjust(max_size)}"
+  convert_strmode(stat.mode)
+end
+
+def format_mtime(filename)
+  pathname = Pathname(filename)
+  stat = pathname.stat
   time_format = (Date.today.year == stat.mtime.year ? '%_m %_d %H:%M' : '%_m %_d  %Y')
-  ret += " #{stat.mtime.strftime(time_format)}"
-  ret += " #{pathname.basename}"
-  ret
+  stat.mtime.strftime(time_format)
+end
+
+def format_row(data, max_nlink, max_user_length, max_group_length, max_size)
+  [
+    data[:type_and_mode],
+    "  #{data[:nlink].rjust(max_nlink)}",
+    " #{data[:user].rjust(max_user_length)}",
+    "  #{data[:group].rjust(max_group_length)}",
+    "  #{data[:size].rjust(max_size)}",
+    " #{data[:mtime]}",
+    " #{data[:basename]}"
+  ].join
 end
 
 def safe_transpose(sliced_filenames)
